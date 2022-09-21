@@ -1,2 +1,2 @@
 # biblioteca-cidaen
-Un sitio en el que consultas los trabajos finales del programa
+Un sitio en el que consultar los trabajos finales del programa
