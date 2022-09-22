@@ -58,3 +58,9 @@ def test_fill_student_entry():
 
     entry_content = template.render(**example)
     assert entry_content == 2
+
+
+def test_student_readme_name():
+    assert "juan_malaga.md" == bl.student_readme_name("Juan Málaga")
+    assert "numero_2-compuesto.md" == bl.student_readme_name("Número 2-compuesto")
+    
