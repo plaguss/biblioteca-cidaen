@@ -6,6 +6,7 @@ from typing import *
 
 from jinja2 import Environment, FileSystemLoader
 from unidecode import unidecode
+from tabulate import tabulate
 
 TEMPLATE_ENTRY = "entrada_alumno.md_t"
 TEMPLATE_README = "README.md_t"
@@ -46,10 +47,26 @@ def itemize_field(strlist: str) -> str:
 
 
 def student_readme_name(name: str) -> str:
+    """Generates the filename for the student's readme. """
     name = name.strip()
     name = unidecode(name).lower()
     return f"{name.replace(' ', '_')}.md"
 
+
+def link_md(name: str, path: str) -> str:
+    """Creates a markdown link. """
+    return f"[{name}]({path})"
+
+
+def table_md(tabular_data: Dict[str, List[str]]) -> str:
+    """Generates a table in markdown format to be inserted in a README.md. """
+    return tabulate(tabular_data, headers="keys", tablefmt="github")
+
+
+def parse_md(file: pathlib.Path) -> Dict[str, str]:
+    """Reads a markdown file of a student and extracts the relevant info. """
+    with open(file, "r") as f:
+        return f.read()
 
 # Para localizar las nuevas entradas
 works = [pathlib.Path(p) for p in glob.glob("./trabajos/**/*.md", recursive=True)]
