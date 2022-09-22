@@ -9,6 +9,7 @@ def test_itemize():
     assert bl.itemize(["item1", "item2"]) == itemize1
     assert bl.itemize([""]) == ""
     assert bl.itemize([]) == ""
+    assert bl.itemize(["hey"]) == "- hey\n"
 
 
 def test_wrap_detailed():
