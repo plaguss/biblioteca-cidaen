@@ -5,6 +5,7 @@ import pathlib
 from typing import *
 
 from jinja2 import Environment, FileSystemLoader
+from unidecode import unidecode
 
 TEMPLATE_ENTRY = "entrada_alumno.md_t"
 TEMPLATE_README = "README.md_t"
@@ -31,14 +32,6 @@ def wrap_detailed(end_year: str = "", text: str = "") -> str:
     )
 
 
-def fill_readme():
-    pass
-
-
-def fill_student_entry():
-    pass
-
-
 def _transform_str_list(strlist: str) -> List[str]:
     """Transforms a str which represents a list, to a list of str."""
     if strlist == "":
@@ -50,6 +43,12 @@ def _transform_str_list(strlist: str) -> List[str]:
 def itemize_field(strlist: str) -> str:
     """Generates a markdown item list from a list of comma separated string."""
     return itemize(_transform_str_list(strlist))
+
+
+def student_readme_name(name: str) -> str:
+    name = name.strip()
+    name = unidecode(name).lower()
+    return f"{name.replace(' ', '_')}.md"
 
 
 # Para localizar las nuevas entradas
