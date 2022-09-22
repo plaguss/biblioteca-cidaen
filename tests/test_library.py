@@ -1,3 +1,4 @@
+import pathlib
 import pytest
 from jinja2 import Environment, FileSystemLoader
 
@@ -104,3 +105,17 @@ def test_student_readme_name():
     assert "juan_malaga.md" == bl.student_readme_name("Juan Málaga")
     assert "numero_2-compuesto.md" == bl.student_readme_name("Número 2-compuesto")
     
+
+def test_table_md():
+    tabular_data = {"Alumno": ["1"], "Título": ["2"], "Enlace": ["3"]}
+    table = bl.table_md(tabular_data)
+    assert table == '|   Alumno |   Título |   Enlace |\n|----------|----------|----------|\n|        1 |        2 |        3 |'
+
+
+def test_parse_md():
+    try:
+        content = bl.parse_md(pathlib.Path.cwd() / "tests" / "sample_name.md")
+    except FileNotFoundError:
+        print("Run this test from the root of the package: biblioteca-cidaen.")
+        raise
+    assert content == 1
