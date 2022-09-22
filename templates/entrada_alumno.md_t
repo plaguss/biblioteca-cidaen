@@ -1,11 +1,32 @@
 # Autor
 
-{{ autor }}
+{{ author }}
+
+## Título
+
+{{ title }}
 
 ## Tutor/es
 
-{{ tutores }}
+{{ tutors }}
 
-## Resumen
+## Abstract
 
-{{ resumen }}
+{{ abstract }}
+
+## Campos
+
+{{ fields }}
+
+## Memoria
+
+{{ memory_link }}
+
+## Repositorio/s
+
+{{ repository_links }}
+
+## Contacto
+
+- Correo: {{ email }}
+- [GitHub](https://github.com/{{ gh_user }}).
