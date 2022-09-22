@@ -21,35 +21,37 @@ def itemize(elements: List[str]) -> str:
 
 
 def wrap_detailed(end_year: str = "", text: str = "") -> str:
-    """Wraps text in html so the text appears clickable. """
+    """Wraps text in html so the text appears clickable."""
     return (
         "<details>"
         f"<summary> Promoción: {end_year} </summary>"
         "<hr>"
-
         f"{text}"
-
         "</details>"
     )
 
 
-environment = Environment(loader=FileSystemLoader("templates/"))
-template = environment.get_template(TEMPLATE_ENTRY)
+def fill_readme():
+    pass
 
-example = {
-    "author": "author",
-    "title": "title",
-    "tutors": "tutor1, tutor2",
-    "abstract": "abstract",
-    "fields": "field1, field2",
-    "memory_link": "memory",
-    "repository_links": "link1, link2",
-    "email": "email",
-    "gh_user": "gh_user",
-}
 
-entry_content = template.render(**example)
-print(entry_content)
+def fill_student_entry():
+    pass
+
+
+def _transform_str_list(strlist: str) -> List[str]:
+    """Transforms a str which represents a list, to a list of str."""
+    if strlist == "":
+        return strlist
+    strlist = strlist.strip()
+    return [s.strip() for s in strlist.split(",") if s != ""]
+
+
+def itemize_field(strlist: str) -> str:
+    """Generates a markdown item list from a list of comma separated string."""
+    return itemize(_transform_str_list(strlist))
+
+
 # Para localizar las nuevas entradas
 works = [pathlib.Path(p) for p in glob.glob("./trabajos/**/*.md", recursive=True)]
 # print(f"Paths: {works}")
