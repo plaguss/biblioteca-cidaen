@@ -1,4 +1,5 @@
 import pathlib
+
 import pytest
 from jinja2 import Environment, FileSystemLoader
 
@@ -59,8 +60,8 @@ def test_fill_student_entry():
     template = environment.get_template(bl.TEMPLATE_ENTRY)
 
     entry_content = template.render(**example)
-    print(str(entry_content))
-    text = ("""# Autor
+
+    text = """# Autor
 
 author
 
@@ -97,25 +98,74 @@ memory
 ## Contacto
 
 - Correo: email
-- [GitHub](https://github.com/gh_user).""")
+- [GitHub](https://github.com/gh_user)."""
     assert entry_content == text
 
 
 def test_student_readme_name():
     assert "juan_malaga.md" == bl.student_readme_name("Juan Málaga")
     assert "numero_2-compuesto.md" == bl.student_readme_name("Número 2-compuesto")
-    
+
 
 def test_table_md():
     tabular_data = {"Alumno": ["1"], "Título": ["2"], "Enlace": ["3"]}
     table = bl.table_md(tabular_data)
-    assert table == '|   Alumno |   Título |   Enlace |\n|----------|----------|----------|\n|        1 |        2 |        3 |'
+    assert (
+        table
+        == "|   Alumno |   Título |   Enlace |\n|----------|----------|----------|\n|        1 |        2 |        3 |"
+    )
 
 
 def test_parse_md():
+    pathfile = pathlib.Path.cwd() / "tests" / "sample_name.md"
     try:
-        content = bl.parse_md(pathlib.Path.cwd() / "tests" / "sample_name.md")
+        content = bl.parse_md(pathfile)
     except FileNotFoundError:
         print("Run this test from the root of the package: biblioteca-cidaen.")
         raise
-    assert content == 1
+    assert isinstance(content, dict)
+    assert content["author"] == "Autor"
+    assert content["title"] == "Tu Título"
+    assert isinstance(content["link"], pathlib.Path)
+
+
+# TODO: Crear función para generar trabajos de prueba.
+def gen_md_fields():
+    pass
+
+
+def test_get_references():
+    import tempfile
+
+    d = {
+        "author": "author",
+        "title": "title",
+        "tutors": "tutor1, tutor2",
+        "abstract": "abstract",
+        "fields": "field1, field2",
+        "memory_link": "memory",
+        "repository_links": "link1, link2",
+        "email": "email",
+        "gh_user": "gh_user",
+    }
+
+    with tempfile.TemporaryDirectory() as dirname:
+        worksdir = pathlib.Path(dirname) / "trabajos"
+        worksdir.mkdir()
+        template = bl.get_template(bl.TEMPLATE_ENTRY)
+        for p in (
+            pathlib.Path("2022") / "name1.md",
+            pathlib.Path("2022") / "name2.md",
+            pathlib.Path("2024") / "name3.md",
+        ):
+            fp = worksdir / p
+            if not fp.parent.exists():
+                fp.parent.mkdir()
+            bl.write_file(fp, template.render(**d))
+        print("contents: ", list(worksdir.glob("*/*.md")))
+        refs = bl.get_references(str(worksdir / "*/*.md"))
+
+    assert len(refs.keys()) == 2
+    assert len(refs["2022"]) == 2
+    assert len(refs["2024"]) == 1
+    assert isinstance(refs["2022"][0], dict)
