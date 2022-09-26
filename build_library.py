@@ -14,6 +14,7 @@ from unidecode import unidecode
 TEMPLATE_ENTRY = "entrada_alumno.md_t"
 TEMPLATE_README = "README.md_t"
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
+NOT_INFORMED_FIELD = "Not informed"
 
 
 def get_template(name: str = TEMPLATE_ENTRY) -> Template:
@@ -44,9 +45,9 @@ def wrap_detailed(end_year: str = "", text: str = "") -> str:
 
 def _transform_str_list(strlist: str) -> List[str]:
     """Transforms a str which represents a list, to a list of str."""
+    strlist = strlist.strip()
     if strlist == "":
         return strlist
-    strlist = strlist.strip()
     return [s.strip() for s in strlist.split(",") if s != ""]
 
 
@@ -116,14 +117,43 @@ def get_references(
     return d
 
 
-def prepare_data(data: Dict[str, str]) -> Dict:
-    pass
+def _to_md_links(content: str, base_name: str = "repository") -> str:
+    """Transforms the content of a str input to be in the form of a
+    markdown link.
+    It's used to prepare the repository links from the user, but may
+    be useful for other cases.
+    """
+    data = _transform_str_list(content)
+    if len(data) == 0:
+        return "" #NOT_INFORMED_FIELD
+
+    items = len(data)
+    transformed = ""
+    for i, d in enumerate(data):
+        field = f"[{base_name + '_' + str(i + 1)}]({d})"
+        # Adds a comma only if there are more than one element and
+        # all but the last item.
+        if i >= 0 or i < items - 1:
+            field += ", "
+        transformed += field
+
+    return itemize_field(transformed)
 
 
-def generate_entry(data: Dict):
+def prepare_data(data: Dict[str, str]) -> Dict[str, str]:
+    """Updates the user info to be directly markdown ready."""
+    # TODO: Validate the entries for the case of no content
+    data["tutors"] = itemize_field(data["tutors"])
+    data["fields"] = itemize_field(data["fields"])
+    data["repository_links"] = _to_md_links(data["repository_links"])
+    return data
+
+
+def generate_entry(data: Dict[str, str]):
     """Creates a markdown file with the info of a student obtained
-    from the console. """
-    d = data
+    from the console."""
+    data = prepare_data(data)
     template = get_template(TEMPLATE_ENTRY)
+    print(data)
     filename = 1  # The name of the file comes from the data
     write_file(filename, template.render(**data))

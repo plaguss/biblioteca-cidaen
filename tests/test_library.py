@@ -6,6 +6,18 @@ from jinja2 import Environment, FileSystemLoader
 import build_library as bl
 
 
+EXAMPLE_USER_DATA = {
+    "author": "author",
+    "title": "title",
+    "tutors": "tutor1, tutor2",
+    "abstract": "abstract",
+    "fields": "field1, field2",
+    "memory_link": "memory",
+    "repository_links": "link1, link2",
+    "email": "email",
+    "gh_user": "gh_user",
+}
+
 def test_itemize():
     itemize1 = "- item1\n- item2\n"
     assert bl.itemize(["item1", "item2"]) == itemize1
@@ -23,23 +35,13 @@ def test_transform_strlist():
     assert ["link1", "link2"] == bl._transform_str_list("link1, link2")
     assert "" == bl._transform_str_list("")
     assert ["l1", "l2", "l3"] == bl._transform_str_list("l1,l2,,l3")
+    assert "" == bl._transform_str_list(" ")
 
 
 def test_itemize_field():
-    example = {
-        "author": "author",
-        "title": "title",
-        "tutors": "tutor1, tutor2",
-        "abstract": "abstract",
-        "fields": "field1, field2",
-        "memory_link": "memory",
-        "repository_links": "link1, link2",
-        "email": "email",
-        "gh_user": "gh_user",
-    }
-    tutors = bl.itemize_field(example["tutors"])
+    tutors = bl.itemize_field(EXAMPLE_USER_DATA["tutors"])
     assert tutors == "- tutor1\n- tutor2\n"
-    links = bl.itemize_field(example["repository_links"])
+    links = bl.itemize_field(EXAMPLE_USER_DATA["repository_links"])
     assert links == "- link1\n- link2\n"
 
 
@@ -129,25 +131,8 @@ def test_parse_md():
     assert isinstance(content["link"], pathlib.Path)
 
 
-# TODO: Crear función para generar trabajos de prueba.
-def gen_md_fields():
-    pass
-
-
 def test_get_references():
     import tempfile
-
-    d = {
-        "author": "author",
-        "title": "title",
-        "tutors": "tutor1, tutor2",
-        "abstract": "abstract",
-        "fields": "field1, field2",
-        "memory_link": "memory",
-        "repository_links": "link1, link2",
-        "email": "email",
-        "gh_user": "gh_user",
-    }
 
     with tempfile.TemporaryDirectory() as dirname:
         worksdir = pathlib.Path(dirname) / "trabajos"
@@ -161,7 +146,7 @@ def test_get_references():
             fp = worksdir / p
             if not fp.parent.exists():
                 fp.parent.mkdir()
-            bl.write_file(fp, template.render(**d))
+            bl.write_file(fp, template.render(**EXAMPLE_USER_DATA))
         print("contents: ", list(worksdir.glob("*/*.md")))
         refs = bl.get_references(str(worksdir / "*/*.md"))
 
@@ -169,3 +154,19 @@ def test_get_references():
     assert len(refs["2022"]) == 2
     assert len(refs["2024"]) == 1
     assert isinstance(refs["2022"][0], dict)
+
+
+def test_md_links():
+    assert bl._to_md_links("") == ""
+    assert bl._to_md_links(" ") == ""
+    assert bl._to_md_links("link1") == '- [repository_1](link1)\n'
+    assert bl._to_md_links("link1, link2") == '- [repository_1](link1)\n- [repository_2](link2)\n'
+    assert bl._to_md_links("link1", base_name="cosa") == '- [cosa_1](link1)\n'
+
+
+def test_prepare_data():
+    ready = bl.prepare_data(EXAMPLE_USER_DATA)
+    assert len(ready) == 9
+    assert ready["fields"] == '- field1\n- field2\n'
+    assert ready["abstract"] == EXAMPLE_USER_DATA["abstract"]
+    assert ready["repository_links"] == '- [repository_1](link1)\n- [repository_2](link2)\n'
