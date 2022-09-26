@@ -170,3 +170,12 @@ def test_prepare_data():
     assert ready["fields"] == '- field1\n- field2\n'
     assert ready["abstract"] == EXAMPLE_USER_DATA["abstract"]
     assert ready["repository_links"] == '- [repository_1](link1)\n- [repository_2](link2)\n'
+
+
+def test_generate_entry():
+    import tempfile
+    with tempfile.TemporaryDirectory() as dirname:
+        worksdir = pathlib.Path(dirname)
+        bl.generate_entry(EXAMPLE_USER_DATA, dest_dir=worksdir)
+        assert (worksdir / "author.md").is_file()
+        assert 1== 2

@@ -1,10 +1,10 @@
 """Script para generar el README.md principal. """
 
+import collections as col
 import glob
 import os
 import pathlib
 import re
-import collections as col
 from typing import *
 
 from jinja2 import Environment, FileSystemLoader, Template
@@ -125,7 +125,7 @@ def _to_md_links(content: str, base_name: str = "repository") -> str:
     """
     data = _transform_str_list(content)
     if len(data) == 0:
-        return "" #NOT_INFORMED_FIELD
+        return ""  # NOT_INFORMED_FIELD
 
     items = len(data)
     transformed = ""
@@ -149,11 +149,18 @@ def prepare_data(data: Dict[str, str]) -> Dict[str, str]:
     return data
 
 
-def generate_entry(data: Dict[str, str]):
+def generate_entry(
+    data: Dict[str, str], dest_dir: pathlib.Path = ROOT_DIR / "templates/2022"
+):
     """Creates a markdown file with the info of a student obtained
-    from the console."""
+    from the console.
+    Needs the info as a dict to be parsed to markdown strings, and the destination
+    directory.
+    By default will write to templates and the promotion of 2022,
+    the year may be obtained from get_references function.
+    """
     data = prepare_data(data)
     template = get_template(TEMPLATE_ENTRY)
-    print(data)
-    filename = 1  # The name of the file comes from the data
-    write_file(filename, template.render(**data))
+    author_renamed = student_readme_name(data["author"])
+    filename = dest_dir / author_renamed
+    write_file(str(filename), template.render(**data))
