@@ -17,20 +17,24 @@ El CrossFit como deporte como deporte competitivo ha venido ganando adeptos en l
 
 En este trabajo se desarrolla una aplicación para  clasificar movimientos de CrossFit como primer paso hacia una aplicación que permita automatizar la revisión de las pruebas enviadas por los atletas. Para llevar a cabo el mismo se crea un conjunto de clips de movimientos, basado en videos realizados por competidores de élite de CrossFit perteneciente a la final de los Crossfit Games 2020. El clasificador utilizado se basa en MoViNets, una familia de redes neuronales para videos eficiente tanto en términos de computación como de memoria, y se presenta una aplicación desarrollada en AWS. Todo el código está disponible públicamente, y una pequeña librería utilizada para trabajar con MoViNets está disponible en PyPI.
 
+
 ## Campos
 
-- deep-learning
+- deep learning
 - cloud
+- computer vision
+- video classification
 
 
 ## Memoria
 
-https://github.com/plaguss/tfm-misc/blob/main/TFM_CIDaeN/TFM.pdf
+- [TFM.pdf](https://github.com/plaguss/tfm-misc/blob/main/TFM_CIDaeN/TFM.pdf)
+
 
 ## Repositorio/s
 
-- [repository_1](https://github.com/plaguss/movinets_helper)
-- [repository_2](https://github.com/plaguss/movinets_dash_app)
+- [movinets_helper](https://github.com/plaguss/movinets_helper)
+- [movinets_dash_app](https://github.com/plaguss/movinets_dash_app)
 
 
 ## Contacto
