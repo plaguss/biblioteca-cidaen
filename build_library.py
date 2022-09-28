@@ -47,7 +47,7 @@ def wrap_detailed(end_year: str = "", text: str = "") -> str:
         "<details>"
         f"<summary> Promoción: {end_year} </summary>"
         "<hr>"
-        f"{text}"
+        f"\n\n{text}\n\n"
         "</details>"
     )
 
@@ -79,6 +79,7 @@ def link_md(name: str, path: str) -> str:
 
 def table_md(tabular_data: Dict[str, List[str]]) -> str:
     """Generates a table in markdown format to be inserted in a README.md."""
+    print(tabulate(tabular_data, headers="keys", tablefmt="github"))
     return tabulate(tabular_data, headers="keys", tablefmt="github")
 
 
@@ -118,7 +119,6 @@ def get_references(
     """
     # TODO: Create an alias for the return type
     works = get_works(glob_path=glob_path)
-    print("works: ", works)
     # Dict of List, with keys the years from the folders.
     d = col.defaultdict(list)
     for w in works:
@@ -175,14 +175,12 @@ def generate_entry(
     if not dest_dir.is_dir():
         dest_dir.mkdir()
     write_file(str(filename), template.render(**data))
+    console.print()
+    console.print(f"Tu entrada se ha generado en: {str(filename)}. \n")
 
 
 def get_parser() -> argparse.ArgumentParser:
-    """Generates the CLI for of the program.
-
-    Currently, there isn't much to be done here, just
-    created for different possibilities.
-    """
+    """Generates the CLI for of the program. """
     description = (
         "\n"
         "Crea tu propia entrada.\n"
@@ -195,10 +193,10 @@ def get_parser() -> argparse.ArgumentParser:
         usage="%(prog)s [OPTIONS]", description=description
     )
     parser.add_argument(
-        "-a",
-        "--autofill",
+        "-l",
+        "--library",
         action="store_true",
-        dest="autofill",
+        dest="library",
         default=False,
         help=(
             "Ejecuta con esta opción para regenerar el README principal, "
@@ -217,20 +215,6 @@ def nonempty(x: str) -> str:
 
 def allow_empty(x: str) -> str:
     return x
-
-
-# function to get input from terminal -- overridden by the test suite
-def term_input(prompt: str) -> str:
-    """Function copied from https://github.com/sphinx-doc/sphinx/blob/5.x/sphinx/cmd/quickstart.py#L70"""
-    # TODO: Maybe remove this function if rich works by itself
-    if sys.platform == "win32":
-        # Important: On windows, readline is not enabled by default.  In these
-        #            environment, escape sequences have been broken.  To avoid the
-        #            problem, quickstart uses ``print()`` to show prompt.
-        print(prompt, end="")
-        return input("")
-    else:
-        return input(prompt)
 
 
 def do_prompt(
@@ -331,14 +315,38 @@ def questionnaire() -> Dict[str, str]:
         "¿Quieres facilitar tu correo por posibles \n" "consultas?"
     )
     console.print()
-    questions["gh_user"] = do_prompt("¿Quieres compartir tu repositorio de GitHub?")
+    questions["gh_user"] = do_prompt(
+        "¿Quieres compartir tu repositorio de GitHub? \n"
+        "Introduce tu usuario"
+    )
     console.print()
-    students_folder = str(ROOT_DIR / "trabajos" / questions["year"])
-    console.print(f"Tu entrada se ha generado en: {students_folder}. \n", style=style)
     console.print("Gracias!", style=style)
+
     console.rule()
 
     return questions
+
+
+def generate_readme():
+    """Creates the README file in the root of the project. """
+    refs = get_references("./trabajos/**/*.md")
+    years = sorted(refs.keys())
+    tfms = ""
+    content = ""
+    for year in years:
+        for register in refs[year]:
+            register["author"] = [register["author"]]
+            register["title"] = [register["title"]]
+            # register["title"] = ["-"]
+            register["link"] = [link_md("enlace", "./" + str(register["link"]))]
+            content += table_md(register)
+        tfms = wrap_detailed(year, content)
+
+    readme_template = get_template(TEMPLATE_README)
+
+    write_file(str(ROOT_DIR / "README.md"), readme_template.render({"tfms": tfms}))
+
+    console.print("README actualizado!")
 
 
 def main(argv: Optional[List[str]]) -> int:
@@ -349,13 +357,12 @@ def main(argv: Optional[List[str]]) -> int:
     except SystemExit as err:
         return err.code
 
-    args = vars(args)  # FIXME: NOT USED FOR THE MOMENT
+    args = vars(args)
 
-    if args["autofill"]:
+    if args["library"]:
         try:
             console.print("Creando la biblioteca")
-            # TODO: Generar el readme principal
-            #    generate_readme()  # Write the markdown and exit.
+            generate_readme()  # Write the markdown and exit.
             return 0
         except Exception as exc:
             print("Error inesperado: ")
@@ -366,7 +373,6 @@ def main(argv: Optional[List[str]]) -> int:
         info = questionnaire()
         generate_entry(info, dest_dir=ROOT_DIR / "trabajos" / info["year"])
         return 0
-        # ask_user(d)
     except KeyboardInterrupt:
         print()
         print("Se interrumpió.")
