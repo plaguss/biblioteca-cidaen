@@ -1,5 +1,6 @@
 """Script para generar el README.md principal. """
 
+import argparse
 import collections as col
 import glob
 import os
@@ -15,6 +16,14 @@ TEMPLATE_ENTRY = "entrada_alumno.md_t"
 TEMPLATE_README = "README.md_t"
 ROOT_DIR = pathlib.Path(os.path.dirname(os.path.abspath(__file__)))
 NOT_INFORMED_FIELD = "Not informed"
+PROMPT_PREFIX = "> "
+
+from rich.console import Console
+from rich.style import Style
+
+console = Console()
+
+style = Style(color="#70c4fd", bold=True)
 
 
 def get_template(name: str = TEMPLATE_ENTRY) -> Template:
@@ -150,7 +159,7 @@ def prepare_data(data: Dict[str, str]) -> Dict[str, str]:
 
 
 def generate_entry(
-    data: Dict[str, str], dest_dir: pathlib.Path = ROOT_DIR / "templates/2022"
+    data: Dict[str, str], dest_dir: pathlib.Path = ROOT_DIR / "trabajos/2022"
 ):
     """Creates a markdown file with the info of a student obtained
     from the console.
@@ -163,4 +172,208 @@ def generate_entry(
     template = get_template(TEMPLATE_ENTRY)
     author_renamed = student_readme_name(data["author"])
     filename = dest_dir / author_renamed
+    if not dest_dir.is_dir():
+        dest_dir.mkdir()
     write_file(str(filename), template.render(**data))
+
+
+def get_parser() -> argparse.ArgumentParser:
+    """Generates the CLI for of the program.
+
+    Currently, there isn't much to be done here, just
+    created for different possibilities.
+    """
+    description = (
+        "\n"
+        "Crea tu propia entrada.\n"
+        "\n"
+        "Ejecuta este programa y rellena los distintas preguntas\n"
+        "para compartir tu trabajo de final de máster con el resto\n"
+        "de tus compañeros de CIDaEN :)\n"
+    )
+    parser = argparse.ArgumentParser(
+        usage="%(prog)s [OPTIONS]", description=description
+    )
+    parser.add_argument(
+        "-a",
+        "--autofill",
+        action="store_true",
+        dest="autofill",
+        default=False,
+        help=(
+            "Ejecuta con esta opción para regenerar el README principal, "
+            "no lanza el cuestionario. Por defecto False"
+        ),
+    )
+    return parser
+
+
+# Validator functions
+def nonempty(x: str) -> str:
+    if not x:
+        raise ValueError("Por favor introduce algún campo.")
+    return x
+
+
+def allow_empty(x: str) -> str:
+    return x
+
+
+# function to get input from terminal -- overridden by the test suite
+def term_input(prompt: str) -> str:
+    """Function copied from https://github.com/sphinx-doc/sphinx/blob/5.x/sphinx/cmd/quickstart.py#L70"""
+    # TODO: Maybe remove this function if rich works by itself
+    if sys.platform == "win32":
+        # Important: On windows, readline is not enabled by default.  In these
+        #            environment, escape sequences have been broken.  To avoid the
+        #            problem, quickstart uses ``print()`` to show prompt.
+        print(prompt, end="")
+        return input("")
+    else:
+        return input(prompt)
+
+
+def do_prompt(
+    text: str, default: str = "", validator: Callable[[str], Any] = allow_empty
+) -> Union[str, bool]:
+    """Loop of input values to be given by the user."""
+    while True:
+        prompt = PROMPT_PREFIX + text + ": "
+
+        # x = term_input(prompt).strip()
+        x = console.input(f"[bold #70c4fd]{prompt}").strip()
+
+        if default and not x:
+            x = default
+        try:
+            x = validator(x)
+        except ValueError as err:
+            print("* " + str(err))
+            continue
+
+        break
+
+    return x
+
+
+def questionnaire() -> Dict[str, str]:
+    """Asks the user for the info to be added.
+
+    The current info includes:
+    * autor (author)
+    * año de promoción (year)
+    * título (title)
+    * tutores (tutors)
+    * campos (fields)
+    * memoria (memory_link)
+    * repositorio (repository_links)
+    * email (email)
+    * usuario_github (gh_user)
+    """
+    # TODO: PRETTIFY WITH rich
+    console.print("Bienvenido al registro de TFMs de CIDaEN.", style=style)
+    console.print()
+    console.print("Por favor, responde a las siguientes preguntas ", style=style)
+    console.print("para incluir información de tu trabajo.", style=style)
+    console.print()
+    console.print("Si un campo no quieres informarlo, pulsa Enter", style=style)
+    console.print("y se asumirá el valor por defecto (aparecerá vacío).", style=style)
+    console.rule()
+
+    questions = {}
+    # Añadir validadores para los distintos campos
+    console.print()
+    questions["author"] = do_prompt("Introduce tu nombre")
+    console.print()
+    questions["year"] = do_prompt(
+        "¿Cuál es el año de tu promoción? \n"
+        "Si cursaste la promoción 2021-2022, \n"
+        "introduce 2022"
+    )
+    console.print()
+    questions["title"] = do_prompt("Título del trabajo")
+    console.print()
+    questions["tutors"] = do_prompt(
+        "Tutor/es. Si has tenido más de uno, \n"
+        "introdúcelos separados por coma, como\n"
+        "se muestra a continuación [tutor1, tutor2]"
+    )
+    console.print()
+    questions["abstract"] = do_prompt(
+        "Abstract. Puedes directamente copiar y, \n"
+        "pegar el resumen de tu trabajo."
+    )
+    console.print()
+    questions["fields"] = do_prompt(
+        "Campo/s con los que se relaciona tu trabajo. \n"
+        "Si has tenido más de uno, introdúcelos \n"
+        "separados por coma: [deep_learning, cloud_computing]"
+    )
+    console.print()
+    questions["memory_link"] = do_prompt(
+        "Si tu trabajo lo tienes expuesto \n"
+        "de forma pública (por ejemplo, un .pdf \n"
+        "en un repositorio tuyo público), y quieres \n"
+        "dar acceso para que otros lo lean, escribe \n"
+        "el enlace aquí"
+    )
+    console.print()
+    questions["repository_links"] = do_prompt(
+        "¿Tienes el código compartido de forma \n"
+        "pública en un repositorio de GitHub \n"
+        ", y quieres dar acceso para que otros lo puedan \n"
+        "leer? Introduce el enlace aquí. Si tienes más de \n"
+        "un repositorio, introdúcelos como una lista \n"
+        "separada por comas [repo1, repo2]"
+    )
+    console.print()
+    questions["email"] = do_prompt(
+        "¿Quieres facilitar tu correo por posibles \n" "consultas?"
+    )
+    console.print()
+    questions["gh_user"] = do_prompt("¿Quieres compartir tu repositorio de GitHub?")
+    console.print()
+    students_folder = str(ROOT_DIR / "trabajos" / questions["year"])
+    console.print(f"Tu entrada se ha generado en: {students_folder}. \n", style=style)
+    console.print("Gracias!", style=style)
+    console.rule()
+
+    return questions
+
+
+def main(argv: Optional[List[str]]) -> int:
+    # Function adapted from: https://github.com/sphinx-doc/sphinx/blob/5.x/sphinx/cmd/quickstart.py#L589
+    parser = get_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as err:
+        return err.code
+
+    args = vars(args)  # FIXME: NOT USED FOR THE MOMENT
+
+    if args["autofill"]:
+        try:
+            console.print("Creando la biblioteca")
+            # TODO: Generar el readme principal
+            #    generate_readme()  # Write the markdown and exit.
+            return 0
+        except Exception as exc:
+            print("Error inesperado: ")
+            print(exc)
+            return 1
+
+    try:
+        info = questionnaire()
+        generate_entry(info, dest_dir=ROOT_DIR / "trabajos" / info["year"])
+        return 0
+        # ask_user(d)
+    except KeyboardInterrupt:
+        print()
+        print("Se interrumpió.")
+        return 130  # 128 + SIGINT
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(main(sys.argv[1:]))
