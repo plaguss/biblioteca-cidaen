@@ -1,8 +1,10 @@
-# biblioteca-cidaen
+<h1 align="center">Biblioteca</h1>
 
-<center>
-Un sitio en el que consultar los trabajos finales del programa
-</center>
+<p align="center">
+  <img src="./assets/cidaen.svg" />
+</p>
+
+
 
 ---
 Bienvenido a la biblioteca de CIDaeN, aquí puedes echar un vistazo
