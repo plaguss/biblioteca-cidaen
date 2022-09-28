@@ -138,7 +138,9 @@ def _to_md_links(content: str, base_name: str = "repository") -> str:
     items = len(data)
     transformed = ""
     for i, d in enumerate(data):
-        field = f"[{base_name + '_' + str(i + 1)}]({d})"
+        name = pathlib.Path(d).name
+        # field = f"[{base_name + '_' + str(i + 1)}]({d})"
+        field = f"[{name}]({d})"
         # Adds a comma only if there are more than one element and
         # all but the last item.
         if i >= 0 or i < items - 1:
@@ -153,6 +155,7 @@ def prepare_data(data: Dict[str, str]) -> Dict[str, str]:
     # TODO: Validate the entries for the case of no content
     data["tutors"] = itemize_field(data["tutors"])
     data["fields"] = itemize_field(data["fields"])
+    data["memory_link"] = _to_md_links(data["memory_link"])
     data["repository_links"] = _to_md_links(data["repository_links"])
     return data
 

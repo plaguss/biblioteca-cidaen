@@ -27,7 +27,7 @@ def test_itemize():
 
 
 def test_wrap_detailed():
-    text = "<details><summary> Promoción: 2022 </summary><hr>\n\nthis text\n\n</details>"
+    text = "<details><summary> Promoción: 2022 </summary><hr>\n\nthis text\n\n</details>\n\n"
     assert text == bl.wrap_detailed(end_year="2022", text="this text")
 
 
@@ -159,9 +159,9 @@ def test_get_references():
 def test_md_links():
     assert bl._to_md_links("") == ""
     assert bl._to_md_links(" ") == ""
-    assert bl._to_md_links("link1") == '- [repository_1](link1)\n'
-    assert bl._to_md_links("link1, link2") == '- [repository_1](link1)\n- [repository_2](link2)\n'
-    assert bl._to_md_links("link1", base_name="cosa") == '- [cosa_1](link1)\n'
+    assert bl._to_md_links("link1") == '- [link1](link1)\n'
+    assert bl._to_md_links("link1, link2") == '- [link1](link1)\n- [link2](link2)\n'
+    assert bl._to_md_links("link1", base_name="cosa") == '- [link1](link1)\n'
 
 
 def test_prepare_data():
@@ -169,7 +169,7 @@ def test_prepare_data():
     assert len(ready) == 9
     assert ready["fields"] == '- field1\n- field2\n'
     assert ready["abstract"] == EXAMPLE_USER_DATA["abstract"]
-    assert ready["repository_links"] == '- [repository_1](link1)\n- [repository_2](link2)\n'
+    assert ready["repository_links"] == '- [link1](link1)\n- [link2](link2)\n'
 
 
 def test_generate_entry():
