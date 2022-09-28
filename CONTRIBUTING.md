@@ -19,7 +19,8 @@ A continuación se puede ver un ejemplo del funcionamiento del programa, solo ti
 $ python build_library.py
 ```
 
-![demo](./assets/tty.gif)
+[![asciicast](https://asciinema.org/a/gahwh0wpNmdPKDOIrkRqzkRfv.svg)](https://asciinema.org/a/gahwh0wpNmdPKDOIrkRqzkRfv)
+
 
 ## 4. Crea un Pull Request al repositorio
 
