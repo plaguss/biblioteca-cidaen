@@ -27,7 +27,7 @@ def test_itemize():
 
 
 def test_wrap_detailed():
-    text = "<details><summary> Promoción: 2022 </summary><hr>this text</details>"
+    text = "<details><summary> Promoción: 2022 </summary><hr>\n\nthis text\n\n</details>"
     assert text == bl.wrap_detailed(end_year="2022", text="this text")
 
 
@@ -178,4 +178,8 @@ def test_generate_entry():
         worksdir = pathlib.Path(dirname)
         bl.generate_entry(EXAMPLE_USER_DATA, dest_dir=worksdir)
         assert (worksdir / "author.md").is_file()
-        assert 1== 2
+
+
+# def test_generate_readme():
+#     readme = bl.generate_readme()
+#     assert 1==2
