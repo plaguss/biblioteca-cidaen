@@ -48,7 +48,7 @@ def wrap_detailed(end_year: str = "", text: str = "") -> str:
         f"<summary> Promoción: {end_year} </summary>"
         "<hr>"
         f"\n\n{text}\n\n"
-        "</details>"
+        "</details>\n\n"
     )
 
 
@@ -79,7 +79,6 @@ def link_md(name: str, path: str) -> str:
 
 def table_md(tabular_data: Dict[str, List[str]]) -> str:
     """Generates a table in markdown format to be inserted in a README.md."""
-    print(tabulate(tabular_data, headers="keys", tablefmt="github"))
     return tabulate(tabular_data, headers="keys", tablefmt="github")
 
 
@@ -333,14 +332,16 @@ def generate_readme():
     years = sorted(refs.keys())
     tfms = ""
     content = ""
+    registers = col.defaultdict(list)
     for year in years:
         for register in refs[year]:
-            register["author"] = [register["author"]]
-            register["title"] = [register["title"]]
-            # register["title"] = ["-"]
-            register["link"] = [link_md("enlace", "./" + str(register["link"]))]
-            content += table_md(register)
-        tfms = wrap_detailed(year, content)
+            registers["author"].append(register["author"])
+            registers["title"].append(register["title"])
+            registers["link"].append(link_md("enlace", "./" + str(register["link"])))
+
+        content = table_md(registers)
+        tfms += wrap_detailed(year, content)
+        registers = col.defaultdict(list)  # Restart the content to avoid reprinting it 
 
     readme_template = get_template(TEMPLATE_README)
 
@@ -361,13 +362,12 @@ def main(argv: Optional[List[str]]) -> int:
 
     if args["library"]:
         try:
-            console.print("Creando la biblioteca")
             generate_readme()  # Write the markdown and exit.
             return 0
         except Exception as exc:
             print("Error inesperado: ")
-            print(exc)
-            return 1
+            raise exc
+            # return 1
 
     try:
         info = questionnaire()
