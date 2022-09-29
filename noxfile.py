@@ -49,7 +49,7 @@ def build_readme(session):
         session.run("git", "push", external=True)
 
 
-@nox.session(python=["3.8", "3.9", "3.10"])
+@nox.session
 def tests(session):
     install_dev_requirements(session)
     install_requirements(session)
