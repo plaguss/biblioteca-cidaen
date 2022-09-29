@@ -46,7 +46,7 @@ def build_readme(session):
         )
         session.run("git", "add", "README.md", external=True)
         session.run("git", "commit", "-m", "autocommit from within nox", external=True)
-        session.run("git", "push", "upstream", "main", external=True)
+        session.run("git", "push", external=True)
 
 
 @nox.session(python=["3.8", "3.9", "3.10"])
