@@ -1,0 +1,22 @@
+name: Build Library
+
+on:
+  push:
+    branches: main
+
+jobs:
+  build-lib:
+    name: nox --session build_readme
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        name: Install Python
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Build Library
+        run: nox --session build_readme
