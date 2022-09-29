@@ -27,6 +27,8 @@ def build_readme(session):
     """Installs the requirements, recreates the main README and pushes it to the main branch. """
     install_requirements(session)
     session.run("python", "build_library.py", "-l")
+    session.run("git", "config", "user.name", "agus", external=True)
+    session.run("git", "config", "user.email", "agustin.piqueres@gmail.com", external=True)
     session.run("git", "add", "README.md", external=True)
     session.run("git", "commit", "-m", "autocommit from within nox", external=True)
     session.run("git", "push", "upstream", "main", external=True)
