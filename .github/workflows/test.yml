@@ -2,12 +2,13 @@ name: Test
 
 on:
   push:
-    branches: main
+    paths:
+      - ".github/workflows/test.yml"
+      - "**.py"
 
 jobs:
   test:
     name: ${{ matrix.os }} / ${{ matrix.python_version }}
-    if: contains(github.event.head_commit.message, 'fully tested')
     runs-on: ${{ matrix.os }}-latest
     strategy:
       fail-fast: false
