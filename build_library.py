@@ -182,7 +182,7 @@ def generate_entry(
 
 
 def get_parser() -> argparse.ArgumentParser:
-    """Generates the CLI for of the program. """
+    """Generates the CLI for of the program."""
     description = (
         "\n"
         "Crea tu propia entrada.\n"
@@ -286,8 +286,7 @@ def questionnaire() -> Dict[str, str]:
     )
     console.print()
     questions["abstract"] = do_prompt(
-        "Abstract. Puedes directamente copiar y, \n"
-        "pegar el resumen de tu trabajo."
+        "Abstract. Puedes directamente copiar y, \n" "pegar el resumen de tu trabajo."
     )
     console.print()
     questions["fields"] = do_prompt(
@@ -318,8 +317,7 @@ def questionnaire() -> Dict[str, str]:
     )
     console.print()
     questions["gh_user"] = do_prompt(
-        "¿Quieres compartir tu repositorio de GitHub? \n"
-        "Introduce tu usuario"
+        "¿Quieres compartir tu repositorio de GitHub? \n" "Introduce tu usuario"
     )
     console.print()
     console.print("Gracias!", style=style)
@@ -330,7 +328,7 @@ def questionnaire() -> Dict[str, str]:
 
 
 def generate_readme():
-    """Creates the README file in the root of the project. """
+    """Creates the README file in the root of the project."""
     refs = get_references("./trabajos/**/*.md")
     years = sorted(refs.keys())
     tfms = ""
@@ -344,7 +342,7 @@ def generate_readme():
 
         content = table_md(registers)
         tfms += wrap_detailed(year, content)
-        registers = col.defaultdict(list)  # Restart the content to avoid reprinting it 
+        registers = col.defaultdict(list)  # Restart the content to avoid reprinting it
 
     readme_template = get_template(TEMPLATE_README)
 
