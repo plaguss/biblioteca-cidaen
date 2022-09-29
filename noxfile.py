@@ -8,7 +8,6 @@ To run a single session
 
 $ nox --session build_readme
 
-
 """
 
 import nox
