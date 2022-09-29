@@ -22,8 +22,14 @@ a los trabajos de fin de máster pasados.
 
 ---
 
-## Como añadir tu trabajo
+## Quieres ayudar a tus compañeros?
 
-Por favor, sigue el siguiente enlace para ver como contribuir:
+Por favor, entra en el siguiente enlace para ver como contribuir con tu
+propio trabajo:
 
 [CONTRIBUTING.md](CONTRIBUTING.md)
+
+Toda la información es totalmente opcional. Si algún campo no quieres
+rellenarlo, déjalo en blanco. La idea es saber en que han trabajado
+otros compañeros, por si pudiera ayudar a otra persona a saber que
+temas se han tratado, o por simple curiosidad.
