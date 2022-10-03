@@ -67,7 +67,7 @@ def test_fill_student_entry():
 
 author
 
-## Título
+## TFM
 
 title
 
@@ -107,7 +107,7 @@ memory
 
 
 
-## Título
+## TFM
 
 
 
@@ -176,7 +176,7 @@ def test_parse_md():
         raise
     assert isinstance(content, dict)
     assert content["author"] == "Autor"
-    assert content["title"] == "Tu Título"
+    assert content["title"] == "El Título del tfm"
     assert isinstance(content["link"], pathlib.Path)
 
 

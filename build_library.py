@@ -84,8 +84,8 @@ def table_md(tabular_data: Dict[str, List[str]]) -> str:
 
 #regex_author = re.compile(r"# Autor(.*?)## Título", re.UNICODE)
 #regex_title = re.compile(r"## Título(.*?)## Tutor/es", re.UNICODE)
-regex_author = re.compile(r"# Autor(.*?)## Title", re.UNICODE)
-regex_title = re.compile(r"## Title(.*?)## Tutor/es", re.UNICODE)
+regex_author = re.compile(r"# Autor(.*?)## TFM")
+regex_title = re.compile(r"## TFM(.*?)## Tutor/es")
 
 
 def parse_md(file: pathlib.Path) -> Dict[str, Union[str, pathlib.Path]]:
@@ -95,11 +95,10 @@ def parse_md(file: pathlib.Path) -> Dict[str, Union[str, pathlib.Path]]:
     with open(file, "r") as f:
         content = f.read()
 
-    content_ = content.replace("\n", "")  # Remove \n prior to regex search
-    content_ = content_.replace("## Título", "## Title")  # Check for windows GitHub actions runner
+    content = content.replace("\n", "")  # Remove \n prior to regex search
 
-    author = re.search(regex_author, content_).group(1)
-    title = re.search(regex_title, content_).group(1)
+    author = re.search(regex_author, content).group(1)
+    title = re.search(regex_title, content).group(1)
 
     return {"author": author, "title": title, "link": file}
 
