@@ -4,7 +4,7 @@ Autor
 
 ## TFM
 
-El Título del tfm
+El nombre del tfm
 
 ## Tutor/es
 
@@ -12,7 +12,7 @@ tutor
 
 ## Abstract
 
-Mucho texto aquí.
+Mucho texto.
 
 Y sigue.
 

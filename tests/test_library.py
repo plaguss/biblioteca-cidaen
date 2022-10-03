@@ -176,7 +176,7 @@ def test_parse_md():
         raise
     assert isinstance(content, dict)
     assert content["author"] == "Autor"
-    assert content["title"] == "El Título del tfm"
+    assert content["title"] == "El nombre del tfm"
     assert isinstance(content["link"], pathlib.Path)
 
 
