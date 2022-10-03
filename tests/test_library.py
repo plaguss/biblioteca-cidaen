@@ -103,6 +103,55 @@ memory
 - [GitHub](https://github.com/gh_user)."""
     assert entry_content == text
 
+    text_no_content = """# Autor
+
+
+
+## Título
+
+
+
+## Tutor/es
+
+
+
+## Abstract
+
+
+
+## Campos
+
+
+
+## Memoria
+
+
+
+## Repositorio/s
+
+
+
+## Contacto
+
+- Correo: 
+- [GitHub](https://github.com/)."""
+
+
+    example = {
+        "author": "",
+        "title": "",
+        "tutors": bl.itemize_field(""),
+        "abstract": "",
+        "fields": bl.itemize_field(""),
+        "memory_link": "",
+        "repository_links": bl.itemize_field(""),
+        "email": "",
+        "gh_user": "",
+    }
+    entry_content = template.render(**example)
+    assert entry_content == text_no_content
+
+
 
 def test_student_readme_name():
     assert "juan_malaga.md" == bl.student_readme_name("Juan Málaga")
