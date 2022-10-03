@@ -82,6 +82,10 @@ def table_md(tabular_data: Dict[str, List[str]]) -> str:
     return tabulate(tabular_data, headers="keys", tablefmt="github")
 
 
+regex_author = re.compile(r"# Autor(.*?)## Título", re.UNICODE)
+regex_title = re.compile(r"## Título(.*?)## Tutor/es", re.UNICODE)
+
+
 def parse_md(file: pathlib.Path) -> Dict[str, Union[str, pathlib.Path]]:
     """Reads a markdown file of a student and extracts the relevant info.
     {"author": "autor", "title": "title", "link": "path"}
@@ -89,8 +93,6 @@ def parse_md(file: pathlib.Path) -> Dict[str, Union[str, pathlib.Path]]:
     with open(file, "r") as f:
         content = f.read()
 
-    regex_author = re.compile(r"# Autor(.*?)## Título")
-    regex_title = re.compile(r"## Título(.*?)## Tutor/es")
     content = content.replace("\n", "")  # Remove \n prior to regex search
 
     author = re.search(regex_author, content).group(1)
